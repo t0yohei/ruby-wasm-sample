@@ -1,22 +1,12 @@
-console.log("Hello World");
+import { DefaultRubyVM } from "https://cdn.jsdelivr.net/npm/@ruby/wasm-wasi@2.7.1/dist/browser/+esm";
+const response = await fetch("./my-ruby-app.wasm");
+const module = await WebAssembly.compileStreaming(response);
+const { vm } = await DefaultRubyVM(module);
 
-async function initVM() {
-  const response = await fetch("./my-ruby-app.wasm");
-  const ruby_module = await WebAssembly.compileStreaming(response);
-  console.log(ruby_module);
-}
+vm.evalAsync(`
+      require "js"
+      require_relative 'src/my_app'
 
-initVM();
-
-// WebAssembly.instantiateStreaming(fetch("my-ruby-app.wasm"), importObject).then(
-//   (results) => {
-//     // Do something with the results!
-//   }
-// );
-
-// fetch("my-ruby-app.wasm")
-//   .then((response) => response.arrayBuffer())
-//   .then((bytes) => WebAssembly.instantiate(bytes, importObject))
-//   .then((results) => {
-//     // コンパイルされた結果 (results) で何かする!
-//   });
+      response = JS.global.fetch("https://www.ruby-lang.org/").await
+      puts response[:status]
+    `);

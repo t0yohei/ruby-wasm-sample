@@ -1,6 +1,14 @@
+.PHONY: setup
+setup: ## Setup app
+	bundle install
+
+.PHONY: build
+build: ## Build app
+	bundle exec rbwasm build --ruby-version 3.4 -o ruby.wasm
+
 .PHONY: pack
 pack: ## Pack app
-	rbwasm pack ruby.wasm --dir ./src::/src --dir ./ruby-3.4-wasm32-unknown-wasip1-full/usr::/usr -o my-ruby-app.wasm
+	bundle exec rbwasm pack ruby.wasm --dir ./src::/src -o my-ruby-app.wasm
 
 .PHONY: serve
 serve: ## Serve app
